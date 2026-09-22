@@ -2,17 +2,16 @@
   "name": "@still-running/mcp",
   "version": "0.1.0",
   "description": "MCP server exposing stillrunning.dev's workflow analysis to Claude Desktop, Claude Code, and Cursor.",
+  "homepage": "https://stillrunning.dev",
+  "bugs": {
+    "url": "https://github.com/still-running-dev/mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/still-running-dev/mcp.git"
+  },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "still-running-mcp": "./dist/index.js"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -20,18 +19,18 @@
       "default": "./dist/index.js"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/still-running-dev/mcp.git"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "still-running-mcp": "dist/index.js"
   },
-  "homepage": "https://stillrunning.dev",
-  "bugs": {
-    "url": "https://github.com/still-running-dev/mcp/issues"
+  "directories": {
+    "test": "test"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "typecheck": "tsc -b",
     "test": "vitest run",
@@ -48,5 +47,9 @@
     "@types/node": "^24.0.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
