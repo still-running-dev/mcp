@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+**Fixed:** a client that disconnected while a response was being written
+crashed the server with an unhandled `EPIPE` error and a stack trace. It now
+exits quietly with code 0.
+
+**Fixed:** `analyze_workflow` and `compare_workflows` given a string that is
+not JSON returned `JSON.parse`'s own message ("Unexpected token 'o', …").
+They now say it is not valid JSON and how to export the file.
+
 ## 0.1.1
 
 **Fixed:** `npx -y @still-running/mcp` exited without starting a server on

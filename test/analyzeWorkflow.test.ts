@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeWorkflowInput } from '../src/tools/analyzeWorkflow.js';
+import { analyzeWorkflowInput, NOT_JSON_MESSAGE } from '../src/tools/analyzeWorkflow.js';
 
 const VALID_N8N_WORKFLOW = {
 	id: '1',
@@ -25,6 +25,12 @@ describe('analyzeWorkflowInput', () => {
 		const outcome = analyzeWorkflowInput(JSON.stringify(VALID_N8N_WORKFLOW));
 
 		expect(outcome.ok).toBe(true);
+	});
+
+	it('says what to do when the string is not JSON, instead of JSON.parse\'s own message', () => {
+		const outcome = analyzeWorkflowInput('not json at all');
+
+		expect(outcome).toEqual({ ok: false, message: NOT_JSON_MESSAGE });
 	});
 
 	it('returns ok:false with a message instead of throwing, on unrecognized input', () => {

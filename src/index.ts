@@ -30,6 +30,16 @@ export function createServer(): McpServer {
 
 /** Serves over stdin/stdout. What the `still-running-mcp` bin (`cli.ts`) runs. */
 export function serveStdio(): void {
+	// When the client goes away mid-response, the next write to stdout fails
+	// with EPIPE. Unhandled, that is an 'error' event on the socket and the
+	// process dies with a stack trace. The client is gone either way, so
+	// leave quietly.
+	process.stdout.on('error', (error: NodeJS.ErrnoException) => {
+		if (error.code === 'EPIPE' || error.code === 'ERR_STREAM_DESTROYED') process.exit(0);
+		console.error('still-running-mcp: stdout failed:', error);
+		process.exit(1);
+	});
+
 	createServer()
 		.connect(new StdioServerTransport())
 		.catch((error: unknown) => {

@@ -6,7 +6,7 @@
  * server exited without serving.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -78,6 +78,32 @@ describe('the still-running-mcp bin', () => {
 
 	it('serves when started by its real path', async () => {
 		expect(await serveVia(join(outDir, 'cli.js'))).toEqual({ tools: TOOLS, version });
+	}, 20_000);
+});
+
+describe('a client that disconnects mid-response', () => {
+	it('exits quietly instead of crashing on EPIPE', async () => {
+		const child = spawn(process.execPath, [join(outDir, 'cli.js')], { stdio: ['pipe', 'pipe', 'pipe'] });
+		let stderr = '';
+		child.stderr.on('data', (chunk) => (stderr += chunk));
+		const exited = new Promise<number | null>((resolve) => child.on('exit', (code) => resolve(code)));
+
+		const send = (message: object) => child.stdin.write(`${JSON.stringify(message)}\n`);
+		send({
+			jsonrpc: '2.0',
+			id: 1,
+			method: 'initialize',
+			params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'bin-test', version: '0' } },
+		});
+		await new Promise((resolve) => child.stdout.once('data', resolve));
+
+		// The client goes away: nothing reads the server's stdout any more.
+		child.stdout.destroy();
+		for (let id = 2; id < 40; id++) send({ jsonrpc: '2.0', id, method: 'tools/call', params: { name: 'list_rules', arguments: {} } });
+		child.stdin.end();
+
+		expect(await exited).toBe(0);
+		expect(stderr).not.toMatch(/Unhandled 'error' event|EPIPE/);
 	}, 20_000);
 });
 

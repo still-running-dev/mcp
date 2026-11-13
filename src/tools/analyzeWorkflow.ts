@@ -12,6 +12,9 @@ export const workflowInputSchema = z.union([
 	z.record(z.string(), z.unknown()).describe('The same export, already parsed as an object.'),
 ]);
 
+export const NOT_JSON_MESSAGE =
+	'That is not valid JSON. Pass the whole export file: from n8n use "Download", from Make use "Export Blueprint".';
+
 export type AnalyzeOutcome =
 	| { ok: true; result: ReturnType<typeof analyze> }
 	| { ok: false; message: string };
@@ -23,6 +26,16 @@ export type AnalyzeOutcome =
 // has an explicit return type instead of an inferred one: a generated
 // .d.ts can't reference a type it has no name for.
 export function analyzeWorkflowInput(workflow: z.infer<typeof workflowInputSchema>): AnalyzeOutcome {
+	// analyze() would parse a string itself, but its error is JSON.parse's
+	// own ("Unexpected token 'o', ... is not valid JSON"), which tells an
+	// agent nothing about what to do next.
+	if (typeof workflow === 'string') {
+		try {
+			JSON.parse(workflow);
+		} catch {
+			return { ok: false, message: NOT_JSON_MESSAGE };
+		}
+	}
 	try {
 		const result = analyze(workflow);
 		return { ok: true, result };
