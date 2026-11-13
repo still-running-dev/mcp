@@ -1,6 +1,6 @@
 {
   "name": "@still-running/mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MCP server exposing stillrunning.dev's workflow analysis to Claude Desktop, Claude Code, and Cursor.",
   "homepage": "https://stillrunning.dev",
   "bugs": {
@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@still-running/health-check": "2.3.0",
+    "@still-running/health-check": "2.3.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {

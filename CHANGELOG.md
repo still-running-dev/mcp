@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.1.2
+
+Engine pinned to `@still-running/health-check` 2.3.1: a zero-write finding's
+"Chain:" now lists its steps in the order a run reaches them, and a published
+Make template keeps its name instead of "Untitled scenario".
 
 **Fixed:** a client that disconnected while a response was being written
 crashed the server with an unhandled `EPIPE` error and a stack trace. It now
